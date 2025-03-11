@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data and PIDs
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Environment variables
+.env
+.env.*.local
+
+# Coverage (for testing tools like Istanbul/Jest)
+coverage/
+*.lcov
+
+# Build output
+dist/
+build/
+
+# Dependency lockfiles (choose the one that applies)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# TypeScript cache
+*.tsbuildinfo
+
+# IDE or editor-specific files
+.vscode
+.idea
+*.suo
+*.njsproj
+*.sln
+*.sw?
+
+# OS-specific files (e.g., macOS)
+.DS_Store
+Thumbs.db
