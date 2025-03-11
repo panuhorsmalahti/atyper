@@ -1,18 +1,19 @@
-import { openai } from '@ai-sdk/openai';
-import { CoreMessage, streamText } from 'ai';
+// import { openai } from '@ai-sdk/openai';
+// import { CoreMessage, streamText } from 'ai';
 import dotenv from 'dotenv';
-import * as readline from 'node:readline/promises';
+// import * as readline from 'node:readline/promises';
+import { startServer } from './server';
 
 dotenv.config();
 
-const terminal = readline.createInterface({
+/* const terminal = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-});
+}); */
 
-const messages: CoreMessage[] = [];
+// const messages: CoreMessage[] = [];
 
-async function main() {
+/* async function main() {
   while (true) {
     const userInput = await terminal.question('You: ');
 
@@ -33,6 +34,8 @@ async function main() {
 
     messages.push({ role: 'assistant', content: fullResponse });
   }
-}
+} */
 
-main().catch(console.error);
+// main().catch(console.error);
+
+startServer();
