@@ -1,3 +1,6 @@
+# Dists
+frontends/vscode/out/
+
 # Node modules
 node_modules/
 
