@@ -1,32 +1,32 @@
 import { CoreMessage } from "ai";
 import express, { Request, Response } from "express";
 import { getAgentResponse } from "./agent";
+import { WebSocketServer } from "ws";
 
 export const PORT = 54562;
 
 export function startServer() {
-  const messages: CoreMessage[] = [];
-  const app = express();
+  const wss = new WebSocketServer({ port: PORT });
 
-  app.use(express.json());
+  wss.on("connection", (ws) => {
+    const messages: CoreMessage[] = [];
 
-  app.post("/message", async (req: Request, res: Response) => {
-    const message: CoreMessage = req.body;
+    ws.on("message", async (data) => {
+      const message: CoreMessage = JSON.parse(data.toString());
 
-    console.log("Received message from user.");
+      console.log("Received message from user.");
 
-    messages.push(message);
+      messages.push(message);
 
-    const { responseMessage, newMessages } = await getAgentResponse(messages);
+      const { responseMessage, newMessages } = await getAgentResponse(messages);
 
-    console.log("Received response from LLM.");
+      console.log("Received response from LLM.");
 
-    messages.push(...newMessages);
+      messages.push(...newMessages);
 
-    res.json(responseMessage);
+      ws.send(JSON.stringify(responseMessage));
+    });
   });
 
-  app.listen(PORT, () => {
-    console.log(`atyper server running on http://localhost:${PORT}`);
-  });
+  console.log(`WebSocket server running on ws://localhost:${PORT}`);
 }

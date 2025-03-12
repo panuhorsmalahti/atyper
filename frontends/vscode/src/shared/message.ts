@@ -1,43 +1,28 @@
 import { CoreMessage } from "ai";
-import { request } from "http";
 
 export const PORT = 54562;
 
-export const sendMessage = async (message: CoreMessage): Promise<CoreMessage> =>
-  new Promise((resolve, reject) => {
-    const data = JSON.stringify(message);
-    const options = {
-      hostname: "localhost",
-      port: PORT,
-      path: "/message",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Content-Length': data.length
-      },
-    };
+export const connect = (onMessage: (message: CoreMessage) => void) => new Promise<WebSocket>((resolve, reject) => {
+  const url = `ws://localhost:${PORT}`;
+  const ws = new WebSocket(url);
 
-    const req = request(options, (res) => {
-      let data = "";
+  ws.onerror = (error) => {
+    reject(error);
+  };
 
-      res.on("data", (chunk) => {
-        data += chunk;
-      });
+  ws.onmessage = (event) => {
+    const response = JSON.parse(event.data) as CoreMessage;
 
-      res.on("end", () => {
-        const responseMessage = JSON.parse(data) as CoreMessage;
-        
-        resolve(responseMessage);
-      });
-    });
+    onMessage(response);
+  };
 
-    req.on("error", (error) => {
-      console.error(`Problem with request: ${error.message}`);
+  ws.onopen = () => {
+    resolve(ws);
+  };
+});
 
-      reject(error);
-    });
+export const sendMessage = (ws: WebSocket, message: CoreMessage): Promise<void> =>new Promise((resolve, reject) => {
+  const data = JSON.stringify(message);
 
-    req.write(data);
-
-    req.end();
-  });
+  ws.send(data);
+});

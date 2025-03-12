@@ -15,7 +15,5 @@ export async function getAgentResponse(messages: CoreMessage[]) {
   };
   const newMessages = result.response.messages;
 
-  console.log(JSON.stringify({ responseMessage, newMessages }));
-
   return { responseMessage, newMessages };
 }
