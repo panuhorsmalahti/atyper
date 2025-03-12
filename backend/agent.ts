@@ -1,22 +1,21 @@
 import { openai } from "@ai-sdk/openai";
-import { CoreMessage, streamText } from "ai";
+import { CoreMessage, generateText } from "ai";
+import { tools } from "./tools/tools";
 
 export async function getAgentResponse(messages: CoreMessage[]) {
-  const result = streamText({
+  const result = await generateText({
     model: openai("gpt-4o"),
     messages,
+    tools
   });
-
-  let fullResponse = "";
-
-  for await (const delta of result.textStream) {
-    fullResponse += delta;
-  }
 
   const responseMessage: CoreMessage = {
     role: "assistant",
-    content: fullResponse,
+    content: result.text,
   };
+  const newMessages = result.response.messages;
 
-  return responseMessage;
+  console.log(JSON.stringify({ responseMessage, newMessages }));
+
+  return { responseMessage, newMessages };
 }

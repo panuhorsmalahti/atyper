@@ -17,11 +17,11 @@ export function startServer() {
 
     messages.push(message);
 
-    const responseMessage = await getAgentResponse(messages);
+    const { responseMessage, newMessages } = await getAgentResponse(messages);
 
     console.log("Received response from LLM.");
 
-    messages.push(responseMessage);
+    messages.push(...newMessages);
 
     res.json(responseMessage);
   });
