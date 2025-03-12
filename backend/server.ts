@@ -1,6 +1,6 @@
-import { openai } from "@ai-sdk/openai";
-import { CoreMessage, streamText } from "ai";
+import { CoreMessage } from "ai";
 import express, { Request, Response } from "express";
+import { getAgentResponse } from "./agent";
 
 export const PORT = 54562;
 
@@ -17,23 +17,10 @@ export function startServer() {
 
     messages.push(message);
 
-    const result = streamText({
-      model: openai("gpt-4o"),
-      messages,
-    });
-
-    let fullResponse = "";
-
-    for await (const delta of result.textStream) {
-      fullResponse += delta;
-    }
+    const responseMessage = await getAgentResponse(messages);
 
     console.log("Received response from LLM.");
 
-    const responseMessage: CoreMessage = {
-      role: "assistant",
-      content: fullResponse,
-    };
     messages.push(responseMessage);
 
     res.json(responseMessage);
