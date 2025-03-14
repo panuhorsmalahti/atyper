@@ -39,7 +39,6 @@ pnpm-lock.yaml
 *.tsbuildinfo
 
 # IDE or editor-specific files
-.vscode
 .idea
 *.suo
 *.njsproj
