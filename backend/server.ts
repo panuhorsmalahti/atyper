@@ -1,9 +1,15 @@
 import { CoreMessage } from "ai";
-import express, { Request, Response } from "express";
-import { getAgentResponse } from "./agent";
 import { WebSocketServer } from "ws";
+import { handleCoreMessage } from "./message-handlers/handlers";
 
 export const PORT = 54562;
+
+export type MessageType = "coreMessage";
+
+export interface Message {
+  type: MessageType;
+  data: any;
+}
 
 export function startServer() {
   const wss = new WebSocketServer({ port: PORT });
@@ -12,19 +18,13 @@ export function startServer() {
     const messages: CoreMessage[] = [];
 
     ws.on("message", async (data) => {
-      const message: CoreMessage = JSON.parse(data.toString());
+      const message: Message = JSON.parse(data.toString());
 
-      console.log("Received message from user.");
-
-      messages.push(message);
-
-      const { responseMessage, newMessages } = await getAgentResponse(messages);
-
-      console.log("Received response from LLM.");
-
-      messages.push(...newMessages);
-
-      ws.send(JSON.stringify(responseMessage));
+      if (message.type === "coreMessage") {
+        handleCoreMessage(ws, messages, message);
+      } else {
+        console.warn("Unknown message type " + message.type);
+      }
     });
   });
 

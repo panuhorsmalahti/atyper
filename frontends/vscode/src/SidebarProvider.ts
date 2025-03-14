@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { enableWebsocketPolyfill } from "./shared/websocket-polyfill";
-import { connect, sendMessage } from "./shared/message";
+import { connect, sendCoreMessage } from "./shared/message";
+import { CoreMessage } from "ai";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -20,15 +21,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        const ws = enableWebsocketPolyfill().then(() => connect((responseMessage) => {
-            this._view?.webview.postMessage({ type: "chatMessageResponse", value: responseMessage.content });
+        const ws = enableWebsocketPolyfill().then(() => connect((message) => {
+            if (message.type === "coreMessage") {
+                const coreMessage = message.data as CoreMessage;
+
+                this._view?.webview.postMessage({ type: "chatMessageResponse", value: coreMessage.content });
+            } else {
+                console.warn("Unknown message type " + message.type);
+            }
         }));
 
         // Listen for messages from the Sidebar component and execute action
         webviewView.webview.onDidReceiveMessage(async (data) => {
             switch (data.type) {
                 case "sendChatMessage": {
-                    sendMessage(await ws, {
+                    sendCoreMessage(await ws, {
                         role: "user",
                         content: data.value
                     });
