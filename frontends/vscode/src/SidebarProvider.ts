@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { enableWebsocketPolyfill } from "./shared/websocket-polyfill";
-import { connect, sendCoreMessage } from "./shared/message";
+import { connect, sendCoreMessage, sendSetCwdMessage } from "./shared/message";
 import { CoreMessage } from "ai";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
@@ -29,7 +29,21 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
             } else {
                 console.warn("Unknown message type " + message.type);
             }
-        }));
+        })).then((ws) => {
+            const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+
+            if (workspaceFolder) {
+                const folderPath = workspaceFolder.uri.fsPath;
+
+                console.log('Workspace folder path:', folderPath);
+
+                sendSetCwdMessage(ws, folderPath);
+            } else {
+                console.log("workspaceFolder not found, can't set cwd");
+            }
+
+            return ws;
+        });
 
         // Listen for messages from the Sidebar component and execute action
         webviewView.webview.onDidReceiveMessage(async (data) => {

@@ -1,6 +1,6 @@
 import * as readline from "node:readline/promises";
 import { enableWebsocketPolyfill } from "../vscode/src/shared/websocket-polyfill";
-import { connect, sendCoreMessage } from "../vscode/src/shared/message";
+import { connect, sendCoreMessage, sendSetCwdMessage } from "../vscode/src/shared/message";
 import * as ora from "ora";
 import { CoreMessage } from "ai";
 
@@ -24,6 +24,8 @@ const startCli = async () => {
       console.log("Unknown message type " + message.type);
     }
   });
+
+  sendSetCwdMessage(ws, process.cwd());
 
   const receiveMessage = () => new Promise<CoreMessage>((resolve) => {
     messageCallbacks.push((message) => {

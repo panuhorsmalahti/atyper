@@ -6,7 +6,10 @@
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/frontends/vscode"]
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/frontends/vscode"
+      ],
+      "preLaunchTask": "npm: build-vscode"
     }
   ]
 }
