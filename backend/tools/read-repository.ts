@@ -7,7 +7,7 @@ import { readFile } from "fs/promises";
 const repomixOutputFilename = "repomix-output.txt";
 
 export const readRepository = tool({
-  description: "Read the complete repository contents.",
+  description: "Read the complete repository contents. Use the tool if you need to understand the source code and did not read it yet.",
   parameters: z.object({}),
   execute: async (_options) => {
     const cwd = process.cwd();

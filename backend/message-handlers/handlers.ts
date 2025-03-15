@@ -20,7 +20,7 @@ export const handleCoreMessage = async (ws: WebSocket, messages: CoreMessage[], 
   sendCoreMessage(ws, responseMessage);
 };
 
-export const handleSetCwdMessage = async (ws: WebSocket, message: MessageSetCwd) => {
+export const handleSetCwdMessage = async (message: MessageSetCwd) => {
   console.log("Setting cwd to " + message.data.cwd);
   chdir(message.data.cwd);
 };

@@ -4,14 +4,17 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx cli.ts",
+    "build": "tsc -p ./",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "atyper": "bin/cli.js"
   },
   "author": "Panu Horsmalahti",
   "license": "MIT",
   "description": "",
   "dependencies": {
     "import2": "^1.0.3",
-    "ora": "^8.2.0",
     "tstl": "^3.0.0",
     "ws": "^8.18.1"
   },

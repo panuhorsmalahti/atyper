@@ -1,7 +1,6 @@
 import * as readline from "node:readline/promises";
 import { enableWebsocketPolyfill } from "../vscode/src/shared/websocket-polyfill";
 import { connect, sendCoreMessage, sendSetCwdMessage } from "../vscode/src/shared/message";
-import * as ora from "ora";
 import { CoreMessage } from "ai";
 
 type MessageCallback = (message: CoreMessage) => void;
@@ -36,10 +35,6 @@ const startCli = async () => {
   while (true) {
     const userInput = await terminal.question("you: ");
 
-    const spinner = ora.default({
-      discardStdin: false
-    }).start();
-
     sendCoreMessage(ws, {
       role: "user",
       content: userInput,
@@ -47,7 +42,6 @@ const startCli = async () => {
 
     const response = await receiveMessage();
 
-    spinner.stop();
     console.log("atyper: " + response.content);
   }
 };

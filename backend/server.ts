@@ -35,7 +35,7 @@ export function startServer() {
       if (message.type === "coreMessage") {
         handleCoreMessage(ws, messages, message as MessageCoreMessage);
       } else if (message.type === "setCwd") {
-        handleSetCwdMessage(ws, message as MessageSetCwd)
+        handleSetCwdMessage(message as MessageSetCwd)
       } else {
         console.warn("Unknown message type " + message.type);
       }
