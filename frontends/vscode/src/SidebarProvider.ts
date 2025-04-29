@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { enableWebsocketPolyfill } from "./shared/websocket-polyfill";
 import { connect, sendCoreMessage, sendSetCwdMessage } from "./shared/message";
 import { CoreMessage } from "ai";
+import { handleMessage } from "./handle-message";
 
 export class SidebarProvider implements vscode.WebviewViewProvider {
     _view?: vscode.WebviewView;
@@ -22,12 +23,10 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
         const ws = enableWebsocketPolyfill().then(() => connect((message) => {
-            if (message.type === "coreMessage") {
-                const coreMessage = message.data as CoreMessage;
-
-                this._view?.webview.postMessage({ type: "chatMessageResponse", value: coreMessage.content });
+            if (this._view?.webview) {
+                handleMessage(message, this._view?.webview);
             } else {
-                console.warn("Unknown message type " + message.type);
+                console.warn("webview missing");
             }
         })).then((ws) => {
             const workspaceFolder = vscode.workspace.workspaceFolders?.[0];

@@ -1,24 +1,26 @@
-import * as readline from "node:readline/promises";
 import { enableWebsocketPolyfill } from "../vscode/src/shared/websocket-polyfill";
-import { connect, sendCoreMessage, sendSetCwdMessage } from "../vscode/src/shared/message";
+import { connect, MessageQuestion, sendCoreMessage, sendQuestionResponseMessage, sendSetCwdMessage } from "../vscode/src/shared/message";
 import { CoreMessage } from "ai";
+import { ask, askYesOrNo } from "./ask";
 
 type MessageCallback = (message: CoreMessage) => void;
 
 const startCli = async () => {
-  const terminal = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
   let messageCallbacks: MessageCallback[] = [];
 
-  const ws = await connect((message) => {
+  const ws = await connect(async (message) => {
+    console.log("received message " + message.type);
+    console.log(JSON.stringify(message));
     if (message.type === "coreMessage") {
       messageCallbacks.forEach(callback => {
         callback(message.data as CoreMessage);
       });
       messageCallbacks = [];
+    } else if (message.type === "question") {
+      const question = message as MessageQuestion;
+      const answer = await askYesOrNo(question.data.question);
+
+      sendQuestionResponseMessage(ws, question.data.questionId, answer);
     } else {
       console.log("Unknown message type " + message.type);
     }
@@ -33,16 +35,21 @@ const startCli = async () => {
   });
 
   while (true) {
-    const userInput = await terminal.question("you: ");
+    const userInput = await ask("you: ");
+    console.log("x");
+    const receivePromise = receiveMessage();
 
     sendCoreMessage(ws, {
       role: "user",
       content: userInput,
     });
 
-    const response = await receiveMessage();
+    console.log("waiting to receive message");
+    const { content } = await receivePromise;
 
-    console.log("atyper: " + response.content);
+    if (content) {
+      console.log("atyper: " + content);
+    }
   }
 };
 
