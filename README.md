@@ -2,6 +2,8 @@
 
 Welcome to the atyper Assistant Coder project! Follow the steps below to get the server and CLI up and running.
 
+![screenshot](https://github.com/panuhorsmalahti/atyper/blob/main/screenshot.png?raw=true)
+
 ## Prerequisites
 
 Make sure you have Node.js and npm installed on your machine. You can download them from [nodejs.org](https://nodejs.org/).
